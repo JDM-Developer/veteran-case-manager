@@ -9,6 +9,8 @@ function App() {
   const [claimType, setClaimType] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 

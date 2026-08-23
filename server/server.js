@@ -20,26 +20,12 @@ app.get("/", (req, res) => {
 
 });
 
-const cases = [
-    {
-        id: 1,
-        veteranName: "John Smith",
-        claimType: "Disability Increase",
-        status: "Pending Review"
-    },
-    {
-        id: 2,
-        veteranName: "Maria Jones",
-        claimType: "Initial Claim",
-        status: "In Review"
-    }
-];
+
 app.get("/api/cases", async (req,res) =>{
     const cases = await Case.find();
     res.json(cases);
 })
 app.get("/api/cases/:id", async(req,res) => {
-    const id = Number(req.params.id);
     const foundCase = await Case.findById(req.params.id);
 
     if (!foundCase) {
