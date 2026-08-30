@@ -1,19 +1,22 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Case = require('./models/Case');
+const Case = require('./models/case');
 const cors = require("cors");
 require("dotenv").config();
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log("Connected to MongoDB");
-    })
-    .catch((error) => {
-        console.error("MongoDB connection error:", error);
-    });
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+  }
+};
+
+connectDB();
 
 app.get("/", (req, res) => {
     res.send("Veteran Case Manager API is running");
