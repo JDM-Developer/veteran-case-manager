@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import jvbgLogo from "./assets/jvbg-logo.png";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
   const [cases, setCases] = useState([]);
@@ -27,7 +28,7 @@ function App() {
 
   try {
 
-  const response = await fetch("http://localhost:5000/api/cases", {
+  const response = await fetch(`${API_URL}/api/cases`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -58,7 +59,7 @@ function App() {
 
   const updateStatus = async (id, newStatus) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/cases/${id}`, {
+    const response = await fetch(`${API_URL}/api/cases/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
@@ -91,7 +92,7 @@ function App() {
 
 const deleteCase = async (id) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/cases/${id}`, {
+    const response = await fetch(`${API_URL}/api/cases/${id}`, {
       method: "DELETE"
     });
 
@@ -114,7 +115,7 @@ const deleteCase = async (id) => {
 };
   useEffect(() => {
   const fetchCases = async () => {
-    const response = await fetch("http://localhost:5000/api/cases");
+    const response = await fetch(`${API_URL}/api/cases`);
     const data = await response.json();
     setCases(data);
   };
