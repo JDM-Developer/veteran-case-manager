@@ -10,6 +10,8 @@ function App() {
   const [claimType, setClaimType] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [editingCaseId, setEditingCaseId] = useState(null);
+  const [editForm, setEditForm] = useState(null);
 
   
   const handleSubmit = async (e) => {
@@ -89,6 +91,38 @@ function App() {
   }
 };  
 
+  const saveEdit = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/cases/${editingCaseId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(editForm)
+      });
+
+      const updatedCase = await response.json();
+
+      if (!response.ok) {
+        setError(updatedCase.error || "Unable to update case.");
+        return;
+      }
+
+      setCases(
+        cases.map((caseItem) =>
+          caseItem._id === updatedCase._id ? updatedCase : caseItem
+        )
+      );
+
+      setEditingCaseId(null);
+      setEditForm(null);
+      setError("");
+
+    } catch (error) {
+      setError("Unable to connect to the server.");
+    }
+  };
+
 
 const deleteCase = async (id) => {
   try {
@@ -162,11 +196,63 @@ const deleteCase = async (id) => {
 
       {cases.map((caseItem)=>(
         <div className="case-card" key={caseItem._id}>
-          <h2>{caseItem.veteranName}</h2>
-          <p>Claim Type: {caseItem.claimType}</p>
-          <p>Status: {caseItem.status}</p>
+          {editingCaseId === caseItem._id ? (
+  <>
+        <input
+          type="text"
+          value={editForm.veteranName}
+          onChange={(e) =>
+            setEditForm({
+              ...editForm,
+              veteranName: e.target.value
+            })
+          }
+        />  
+
+        <input
+          type="text"
+          value={editForm.claimType}
+          onChange={(e) =>
+            setEditForm({
+              ...editForm,
+              claimType: e.target.value
+            })
+          }
+        />
+
+        <input
+          type="text"
+          value={editForm.status}
+          onChange={(e) =>
+            setEditForm({
+              ...editForm,
+              status: e.target.value
+            })
+          }
+        />
+      </>
+    ) : (
+  <>
+    <h2>{caseItem.veteranName}</h2>
+    <p>Claim Type: {caseItem.claimType}</p>
+    <p>Status: {caseItem.status}</p>
+  </>
+)}
 
           <div className="case-actions">
+
+          <button
+            onClick={() => {
+              setEditingCaseId(caseItem._id);
+              setEditForm({
+                veteranName: caseItem.veteranName,
+                claimType: caseItem.claimType,
+                status: caseItem.status
+              });
+            }}
+          >
+            Edit
+          </button>
 
           <button
             onClick={()=> updateStatus(caseItem._id, "Approved")}
@@ -178,6 +264,10 @@ const deleteCase = async (id) => {
             onClick = {() => deleteCase(caseItem._id)}
           >
             Delete
+          </button>
+
+          <button onClick={saveEdit}>
+            Save
           </button>
 
         </div>
