@@ -12,6 +12,38 @@ function App() {
   const [error, setError] = useState("");
   const [editingCaseId, setEditingCaseId] = useState(null);
   const [editForm, setEditForm] = useState(null);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const handleLogin = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch(`${API_URL}/api/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: loginEmail,
+        password: loginPassword
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.error || "Unable to log in.");
+      return;
+    }
+
+    localStorage.setItem("token", data.token);
+    await fetchCases();
+    setError("");
+  } catch (error) {
+    setError("Unable to connect to the server.");
+  }
+};
 
   
   const handleSubmit = async (e) => {
@@ -30,13 +62,17 @@ function App() {
 
   try {
 
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_URL}/api/cases`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify(newCase)
   });
+
+  
 
   const createdCase = await response.json();
 
@@ -147,15 +183,29 @@ const deleteCase = async (id) => {
     setError("Unable to connect to the server.");
   }
 };
-  useEffect(() => {
-  const fetchCases = async () => {
-    const response = await fetch(`${API_URL}/api/cases`);
-    const data = await response.json();
-    setCases(data);
-  };
 
-  fetchCases();
-}, []);
+const fetchCases = async () => {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_URL}/api/cases`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    setError(data.error || "Unable to load cases.");
+    return;
+  }
+
+  setCases(data);
+};
+
+  useEffect(() => {
+    fetchCases();
+  }, []);
 
   return (
     <div className='app-container'>
@@ -167,6 +217,24 @@ const deleteCase = async (id) => {
           <p>Claims Management Portal</p>
         </div>
       </div>
+
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={loginEmail}
+          onChange={(e) => setLoginEmail(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={loginPassword}
+          onChange={(e) => setLoginPassword(e.target.value)}
+        />
+
+        <button type="submit">Login</button>
+      </form>
 
       <form className="case-form" onSubmit={handleSubmit}>
         <input
