@@ -113,12 +113,14 @@ const deleteCase = async (id) => {
   }
 };
   useEffect(() => {
-    fetch("http://localhost:5000/api/cases")
-    .then((response) => response.json())
-    .then((data) => {
-      setCases(data);
-    });
-  }, []);
+  const fetchCases = async () => {
+    const response = await fetch("http://localhost:5000/api/cases");
+    const data = await response.json();
+    setCases(data);
+  };
+
+  fetchCases();
+}, []);
 
   return (
     <div className='app-container'>
