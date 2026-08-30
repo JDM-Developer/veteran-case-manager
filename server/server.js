@@ -65,7 +65,7 @@ app.get("/api/cases/:id", async(req,res) => {
     res.json(foundCase);
 
 });
-app.post("/api/cases", async (req, res) => {
+app.post("/api/cases", authenticateToken, async (req, res) => {
     try {
         const newCase = await Case.create(req.body);
         res.status(201).json(newCase);
@@ -145,12 +145,6 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-        { userId: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" }
-    );
-
     const user = await User.findOne({ email: email });
 
     if (!user) {
@@ -170,6 +164,12 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
     res.json({
       message: "Login successful.",
       token: token,
@@ -178,10 +178,12 @@ app.post("/api/login", async (req, res) => {
     });
 
   } catch (error) {
+    console.error("LOGIN ERROR:", error);
+
     res.status(500).json({
-      error: "Unable to log in."
+        error: "Unable to log in."
     });
-  }
+    }
 });
 
 
