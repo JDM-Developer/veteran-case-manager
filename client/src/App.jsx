@@ -166,7 +166,10 @@ function App() {
 const deleteCase = async (id) => {
   try {
     const response = await fetch(`${API_URL}/api/cases/${id}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
 
     const deletedCase = await response.json();
