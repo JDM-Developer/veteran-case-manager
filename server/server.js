@@ -75,7 +75,7 @@ app.post("/api/cases", authenticateToken, async (req, res) => {
         });
     }
 });
-app.patch("/api/cases/:id", async (req,res) => {
+app.patch("/api/cases/:id", authenticateToken, async (req,res) => {
     const updatedCase = await Case.findByIdAndUpdate(
         req.params.id,
         req.body,
