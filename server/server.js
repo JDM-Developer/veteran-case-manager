@@ -55,7 +55,7 @@ app.get("/api/cases", authenticateToken, async (req,res) =>{
     const cases = await Case.find();
     res.json(cases);
 })
-app.get("/api/cases/:id", async(req,res) => {
+app.get("/api/cases/:id", authenticateToken, async(req,res) => {
     const foundCase = await Case.findById(req.params.id);
 
     if (!foundCase) {
@@ -88,7 +88,7 @@ app.patch("/api/cases/:id", authenticateToken, async (req,res) => {
 
     res.json(updatedCase);
 });
-app.delete("/api/cases/:id", async(req,res) => {
+app.delete("/api/cases/:id", authenticateToken, async(req,res) => {
     const deletedCase = await Case.findByIdAndDelete(req.params.id);
 
     if(!deletedCase) {
