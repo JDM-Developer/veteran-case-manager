@@ -51,19 +51,33 @@ app.get("/", (req, res) => {
 });
 
 
-app.get("/api/cases", authenticateToken, async (req,res) =>{
+app.get("/api/cases", authenticateToken, async (req, res) => {
+  try {
     const cases = await Case.find();
     res.json(cases);
-})
-app.get("/api/cases/:id", authenticateToken, async(req,res) => {
+  } catch (error) {
+    res.status(500).json({
+      error: "Unable to retrieve cases."
+    });
+  }
+});
+app.get("/api/cases/:id", authenticateToken, async (req, res) => {
+  try {
     const foundCase = await Case.findById(req.params.id);
 
     if (!foundCase) {
-        return res.status(404).json({error: "Case not found"})
+      return res.status(404).json({
+        error: "Case not found"
+      });
     }
 
     res.json(foundCase);
 
+  } catch (error) {
+    res.status(500).json({
+      error: "Unable to retrieve case."
+    });
+  }
 });
 app.post("/api/cases", authenticateToken, async (req, res) => {
     try {
@@ -71,31 +85,50 @@ app.post("/api/cases", authenticateToken, async (req, res) => {
         res.status(201).json(newCase);
     } catch (error) {
         res.status(400).json({
-            error: error.message
+            error: "Unable to create case."
         });
     }
 });
-app.patch("/api/cases/:id", authenticateToken, async (req,res) => {
+app.patch("/api/cases/:id", authenticateToken, async (req, res) => {
+  try {
     const updatedCase = await Case.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { returnDocument: "after", runValidators: true }
+      req.params.id,
+      req.body,
+      { returnDocument: "after", runValidators: true }
     );
 
     if (!updatedCase) {
-        return res.status(404).json({error: "Case not found"});
+      return res.status(404).json({
+        error: "Case not found"
+      });
     }
 
     res.json(updatedCase);
+
+  } catch (error) {
+    res.status(400).json({
+      error: "Unable to update case."
+    });
+  }
 });
-app.delete("/api/cases/:id", authenticateToken, async(req,res) => {
+
+app.delete("/api/cases/:id", authenticateToken, async (req, res) => {
+  try {
     const deletedCase = await Case.findByIdAndDelete(req.params.id);
 
-    if(!deletedCase) {
-        return res.status(404).json({ error: "Case not found"});
+    if (!deletedCase) {
+      return res.status(404).json({
+        error: "Case not found"
+      });
     }
 
     res.json(deletedCase);
+
+  } catch (error) {
+    res.status(500).json({
+      error: "Unable to delete case."
+    });
+  }
 });
 
 app.post("/api/register", async (req, res) => {
