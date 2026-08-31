@@ -14,6 +14,9 @@ function App() {
   const [editForm, setEditForm] = useState(null);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token")
+);
+
 
   const handleLogin = async (e) => {
   e.preventDefault();
@@ -38,6 +41,7 @@ function App() {
     }
 
     localStorage.setItem("token", data.token);
+    setIsLoggedIn(true);
     await fetchCases();
     setError("");
   } catch (error) {
@@ -209,6 +213,13 @@ const fetchCases = async () => {
   setCases(data);
 };
 
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  setIsLoggedIn(false);
+  setCases([]);
+  setError("");
+};
+
   useEffect(() => {
     fetchCases();
   }, []);
@@ -223,7 +234,7 @@ const fetchCases = async () => {
           <p>Claims Management Portal</p>
         </div>
       </div>
-
+    {!isLoggedIn && (
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -241,7 +252,9 @@ const fetchCases = async () => {
 
         <button type="submit">Login</button>
       </form>
+    )}
 
+    {isLoggedIn && (
       <form className="case-form" onSubmit={handleSubmit}>
         <input
           type="text"
@@ -264,6 +277,13 @@ const fetchCases = async () => {
 
           <button type="submit">Add Case</button>
       </form>
+    )}
+
+    {isLoggedIn && (
+      <button className="logout-button" onClick={handleLogout}>
+        Logout
+      </button>
+    )}
 
       {error && <p className="error-message">{error}</p>} 
       

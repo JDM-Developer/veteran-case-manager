@@ -134,6 +134,23 @@ body {
   background: #07192f;
 }
 
+.logout-button {
+  display: block;
+  margin: 0 0 18px auto;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 3px;
+  background: #0b2344;
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #07192f;
+}
+
 @media (max-width: 800px) {
   .case-form {
     grid-template-columns: 1fr;
